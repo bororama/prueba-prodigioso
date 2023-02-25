@@ -1,0 +1,17 @@
+version : '3'
+
+services:
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        container_name: backend
+        tty: true
+        restart: always
+        volumes:
+            - type: bind
+              source: ./backend/srcs
+              target: /app
+        ports:
+            - 9778:9778
+
