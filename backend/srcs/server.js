@@ -61,7 +61,7 @@ function addQueryParameters(url, paramsObject) {
     let newUrlStr = url + '?';
 
     for (const [key, value] of Object.entries(paramsObject)) {
-        newUrlStr += (key + '=' + value + '&');
+        newUrlStr += (key + '=' + encodeURIComponent(value) + '&');
     }
     newUrlStr = newUrlStr.substring(0, newUrlStr.length - 1);
     
