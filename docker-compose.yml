@@ -1,6 +1,20 @@
 version : '3'
 
 services:
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: frontend
+        tty: true
+        restart: always
+        volumes:
+            - type: bind
+              source: ./frontend/srcs
+              target: /app
+        ports:
+            - 9778:9778
+        
     backend:
         build:
             context: ./backend
@@ -8,10 +22,12 @@ services:
         container_name: backend
         tty: true
         restart: always
+        environment:
+           - CLIENT_ID=${CLIENT_ID}
         volumes:
             - type: bind
               source: ./backend/srcs
-              target: /app
+              target: /server
         ports:
-            - 9778:9778
+            - 3000:3000
 

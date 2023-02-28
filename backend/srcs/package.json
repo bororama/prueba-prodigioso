@@ -1,0 +1,20 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "A secretive volcano",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "npm server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.20"
+  },
+  "author": "bororama",
+  "license": "ISC",
+  "dependencies": {
+    "body": "^5.1.0",
+    "google-auth-library": "^8.7.0"
+  }
+}

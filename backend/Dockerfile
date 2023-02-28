@@ -1,8 +1,6 @@
-FROM node
+FROM node:18
 
-WORKDIR /app
-EXPOSE 9778
-EXPOSE 4200
-#RUN npm install -g @angular/cli
+WORKDIR /server
+EXPOSE 3000
 
-ENTRYPOINT ["bash"]
+#CMD ["npm", "run", "dev"]
