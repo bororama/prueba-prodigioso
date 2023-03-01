@@ -53,7 +53,7 @@ export class GoogleSsoComponent implements OnInit {
       //@ts-ignore
       google.accounts.id.renderButton(
       document.getElementById("buttonDiv"),
-      { theme: "outline", size: "large" }
+      { theme: "filled_black", size: "large", shape: "pill"}
       );
     });
   }

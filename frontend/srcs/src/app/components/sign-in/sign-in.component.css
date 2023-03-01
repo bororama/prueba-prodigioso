@@ -1,0 +1,112 @@
+.sign-in
+{
+    display: flex;
+    margin-top: 5%;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10%;
+}
+
+
+.mosaic-loader {
+    --cell-size: 256px;
+    --cell-spacing: 1px;
+    --border-width: 1px;
+    --cells: 4;
+    --total-size: calc(var(--cells) * (var(--cell-size) + 2 * var(--cell-spacing)));
+    display: flex;
+    flex-wrap: wrap;
+    width: var(--total-size);
+    height: var(--total-size);
+  }
+  .mosaic-loader > .cell {
+    --cell-color: rgba(255, 255, 255, 0.038);
+    flex: 0 0 var(--cell-size);
+    background-color: transparent;
+    box-sizing: border-box;
+    animation: 5s ripple ease-out infinite;
+  }
+  .mosaic-loader > .cell.d-1 {
+    animation-delay: 100ms;
+  }
+  .mosaic-loader > .cell.d-2 {
+    animation-delay: 200ms;
+  }
+  .mosaic-loader > .cell.d-3 {
+    animation-delay: 300ms;
+  }
+  .mosaic-loader > .cell.d-4 {
+    animation-delay: 400ms;
+  }
+  .mosaic-loader > .cell.d-5 {
+    animation-delay: 500ms;
+  }
+  .mosaic-loader > .cell.d-6 {
+    animation-delay: 600ms;
+  }
+  .mosaic-loader > .cell:nth-child(1) {
+    --cell-color: #c6c6c6;
+  }
+  .mosaic-loader > .cell:nth-child(2) {
+    --cell-color: #8080802e;
+  }
+  .mosaic-loader > .cell:nth-child(3) {
+    --cell-color: #5c5c5c2e;
+  }
+  .mosaic-loader > .cell:nth-child(4) {
+    --cell-color: #5e5e5e2e;
+  }
+  .mosaic-loader > .cell:nth-child(5) {
+    --cell-color: #aaaaaa2e;
+  }
+  .mosaic-loader > .cell:nth-child(6) {
+    --cell-color: #9999992e;
+  }
+  .mosaic-loader > .cell:nth-child(7) {
+    --cell-color: #7e7e7e2e;
+  }
+  .mosaic-loader > .cell:nth-child(8) {
+    --cell-color: #5555552e;
+  }
+  .mosaic-loader > .cell:nth-child(9) {
+    --cell-color: #c3c3c32e;
+  }
+  .mosaic-loader > .cell:nth-child(10) {
+    --cell-color: #adadad2e;
+  }
+  .mosaic-loader > .cell:nth-child(11) {
+    --cell-color: #a6a6a62e;
+  }
+  .mosaic-loader > .cell:nth-child(12) {
+    --cell-color: #8989892e;
+  }
+  .mosaic-loader > .cell:nth-child(13) {
+    --cell-color: #cecece2e;
+  }
+  .mosaic-loader > .cell:nth-child(14) {
+    --cell-color: #afafaf2e;
+  }
+  .mosaic-loader > .cell:nth-child(15) {
+    --cell-color: #7171712e;
+  }
+  .mosaic-loader > .cell:nth-child(16) {
+    --cell-color: #4242422e;
+  }
+  
+  @keyframes ripple {
+    0% {
+      background-color: transparent;
+    }
+    30% {
+      background-color: var(--cell-color);
+    }
+    50% {
+      background-color: transparent;
+    }
+    90% {
+      background-color: var(--cell-color);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
