@@ -7,4 +7,4 @@ EXPOSE 4200
 RUN npm i -g @angular/cli
 
 
-ENTRYPOINT [ "/srcs/frontend_commands.sh"]
+ENTRYPOINT [ "/app/frontend_commands.sh"]
