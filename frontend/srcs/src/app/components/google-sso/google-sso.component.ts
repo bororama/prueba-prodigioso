@@ -29,21 +29,35 @@ export class GoogleSsoComponent implements OnInit {
   */
 
   async ngOnInit() {
-    this.http.get<any>('/api/client_id', {observe: 'body'}).subscribe((value) => {
-      //@ts-ignore
-      google.accounts.id.initialize({
-      client_id:  value.client_id,
-      callback: this.handleCredentialResponse,  
-      ux_mode: "redirect",
-      login_uri: "http://localhost:3000/api/login"
-      })
-      //@ts-ignore
-      google.accounts.id.renderButton(
-      document.getElementById("buttonDiv"),
-      { theme: "outline", size: "large" }
-      );
-    });
 
+    this.loadGoogle();
+    
   }
+  private loadGoogle() {
+    const googleLibrary = document.createElement('script');
+    
+    googleLibrary.src = 'https://accounts.google.com/gsi/client';
+    googleLibrary.onload =  () => {this.displayGoogleButton();}
+    document.body.appendChild(googleLibrary);
+  }
+
+    private displayGoogleButton() {
+      this.http.get<any>('/api/client_id', {observe: 'body'}).subscribe((value) => {
+        //@ts-ignore
+        google.accounts.id.initialize({
+        client_id:  value.client_id,
+        callback: this.handleCredentialResponse,  
+        ux_mode: "redirect",
+        login_uri: "http://localhost:3000/api/login"
+        })
+        //@ts-ignore
+        google.accounts.id.renderButton(
+        document.getElementById("buttonDiv"),
+        { theme: "outline", size: "large" }
+        );
+      });
+    }
 }
+  
+
 
