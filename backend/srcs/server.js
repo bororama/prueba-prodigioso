@@ -109,8 +109,9 @@ function processLogIn(req, res) {
             res.writeHead(500);
             return res.end("FATAL")
         }
-        let postRequest = querystring.parse(body);
-        processGooglePostRequest(postRequest.credential, res).catch(() => {
+        let parsedRequest = querystring.parse(body);
+        processGooglePostRequest(parsedRequest, req, res).catch((err) => {
+            console.log(err);
             invalidCredential(res);
         });
     })
@@ -129,15 +130,24 @@ function processAuthorization(req, res) {
     });
 }
 
-async function processGooglePostRequest(credential, res) {
-    // Cross-Site Request Forgery protection could go here
+function CrossSiteRequestForgeryProtection(csrf_token, req) {
+    const cookies = cookie.parse(req.headers.cookie || '');
+
+    if ((cookies.g_csrf_token === undefined) || (cookies.g_csrf_token !== csrf_token)) {
+        throw new Error('CSRF protection failed');
+    }
+
+}
+
+async function processGooglePostRequest(parsedRequest, req, res) {
+    CrossSiteRequestForgeryProtection(parsedRequest.g_csrf_token, req);
     let paramsToUrl = {};
-    let verifiedObject = await googleToken.verify(credential);
+    let verifiedObject = await googleToken.verify(parsedRequest.credential);
     paramsToUrl.userId = verifiedObject.userId;
     paramsToUrl.email = verifiedObject.payload.email;
     paramsToUrl.name = verifiedObject.payload.name;
 
-    res.setHeader("Set-Cookie", "SuperSecureSecretCookie=" + credential + "; Domain=localhost; Path=/; Secure; HttpOnly;");
+    res.setHeader("Set-Cookie", "SuperSecureSecretCookie=" + parsedRequest.credential + "; Domain=localhost; Path=/; Secure; HttpOnly;");
     res.writeHead(303, {
         "location" : addQueryParameters("http://localhost:9778/home", paramsToUrl),
     });

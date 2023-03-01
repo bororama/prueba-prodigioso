@@ -16,6 +16,7 @@
     --total-size: calc(var(--cells) * (var(--cell-size) + 2 * var(--cell-spacing)));
     display: flex;
     flex-wrap: wrap;
+    margin: auto;
     width: var(--total-size);
     height: var(--total-size);
   }
