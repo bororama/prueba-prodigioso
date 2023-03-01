@@ -2,12 +2,15 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule } from './modules/app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpInterceptorService } from './http-interceptors/htpp-interceptor.service'; 
-import { GoogleSsoComponent } from './google-sso/google-sso.component';
-import { SignInComponent } from './sign-in/sign-in.component';
-import { HomeComponent } from './home/home.component';
+import { HttpInterceptorService } from './services/htpp-interceptor.service'; 
+import { AuthService } from './services/auth.service';
+import { GoogleSsoComponent } from './components/google-sso/google-sso.component';
+import { SignInComponent } from './components/sign-in/sign-in.component';
+import { HomeComponent } from './components/home/home.component';
+import { CookieService } from 'ngx-cookie-service';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 
 @NgModule({
@@ -15,7 +18,8 @@ import { HomeComponent } from './home/home.component';
     AppComponent,
       GoogleSsoComponent,
       SignInComponent,
-      HomeComponent
+      HomeComponent,
+      NotFoundComponent
    ],
   imports: [
     BrowserModule,
@@ -27,7 +31,9 @@ import { HomeComponent } from './home/home.component';
      provide: HTTP_INTERCEPTORS, 
      useClass: HttpInterceptorService, 
      multi : true,
-   }
+   },
+   CookieService,
+   AuthService
   ],
   bootstrap: [AppComponent]
 })
