@@ -20,7 +20,6 @@ canActivate(): Observable<boolean> {
   })
   , map((authorized) => {
     if (authorized){
-      console.log(`authorized:${authorized}`);
       return true;
     }
     return false;

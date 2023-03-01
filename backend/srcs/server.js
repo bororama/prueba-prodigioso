@@ -4,77 +4,130 @@ const querystring = require('node:querystring');
 const googleToken = require('./google-token.js');
 const cookie = require('cookie');
 
-const server = http.createServer(async (req, res) => {
-    console.log(`URL:${req.url} METHOD:${req.method}`);
-    //CORS ...
+/*****************/
+/* Server Set up */
+/*****************/
+
+const server = http.createServer((req, res) => {requestHandler(req, res)} );
+
+server.listen('3000');
+
+console.log("Server listening on port 3000");
+
+/***************/
+/* Server Core */
+/***************/
+
+function setCORS(res) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:9778');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    //CORS boilerplate...
+}
+
+/*
+**  My attempt at scalability in pure-ish nodeJS, if a new endpoint to a particular
+**  request is needed, just add it to the corresponding object with the
+**  endpoint location as the key, and its corresponding callback as its value.
+*/
+
+const POSTEndpoints = {
+    '/api/login' : processLogIn,
+    '/api/valid-auth' : processAuthorization,
+};
+
+const GETEndpoints = {
+    '/api/client_id' : serveClientId,
+    '/api/check-auth' : checkAuthorization,
+};
+
+const DELETEEndpoints = {
+    '/api/delete-auth' : deleteAuthorization,
+};
+
+const serverEndpoints = {
+    'GET' : GETEndpoints,
+    'POST' : POSTEndpoints,
+    'DELETE' : DELETEEndpoints,
+}
+
+/*
+**  The handler looks for an endpoint to a specific http request, if it's defined,
+**  the needed method is then called, if it isn't a 404 is sent.
+**
+**  This is the core of the server, all requests pass through here!
+**  For specific behaviours, just look for the callbacks assigned to
+**  each location in the objects above.
+*/
+
+async function requestHandler(req, res) {
+    setCORS(res);
     if (req.method === 'OPTIONS') {
-    
         res.writeHead(200);
         res.end();
         return;
     }
-    if (req.url === "/api/delete-auth" && req.method === "DELETE") {
-        res.clearCookie('SuperSecureSecretCookie', {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-            domain: 'localhost',
-            path: '/',
-        });
-    }
-    else if (req.url === "/api/client_id" && req.method === "GET") {
-        res.writeHead(200, {"Content-Type" : "json"});
-        res.write(JSON.stringify({client_id : process.env.CLIENT_ID}));
-        res.end();
-    }
-    else if (req.url === "/api/login" && req.method === "POST") {
-        textBody(req, res, (err, body) => {
-            if (err) {
-                res.writeHead(500);
-                return res.end("FATAL")
-            }
-            let postRequest = querystring.parse(body);
-            console.log(`login ${body} /login`);
-            processGooglePostRequest(postRequest.credential, res).catch(() => {
-                invalidCredential(res);
-            });
-        })
-    }
-    else if (req.url === "/api/valid-auth" && req.method === "POST") {
-
-        const credential = cookie.parse(req.headers.cookie || '').SuperSecureSecretCookie;
-        processCredentialAuthentication(credential, res).catch((error) => {
-            console.log(`ERROR CAUGHT : ${error}`);
-            invalidCredential(res);
-        });
-    }
-    else if (req.url === "/api/check-auth" && req.method === "GET") {
-
-        const credential = cookie.parse(req.headers.cookie || '').SuperSecureSecretCookie;
-        console.log("cookiecredential is:", credential);
-        res.writeHead(200, {"Content-type" : "text"});
-        if (credential === undefined) {
-            res.write('false');
-        }
-        else {
-            res.write('true')
-        }
-        res.end();
+    let serverMethod = serverEndpoints[req.method][req.url];
+    if (serverMethod !== undefined) {
+        serverMethod(req, res);
     }
     else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end();
     }
-});
+}
 
-server.listen('3000');
+/********************/
+/* Response methods */  
+/********************/
 
-console.log("Server listening on port 3000");
+function deleteAuthorization(req, res) {
+    res.clearCookie('SuperSecureSecretCookie', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        domain: 'localhost',
+        path: '/',
+    });
+}
+
+function checkAuthorization(req, res) {
+    const credential = cookie.parse(req.headers.cookie || '').SuperSecureSecretCookie;
+    res.writeHead(200, {"Content-type" : "text"});
+    if (credential === undefined) {
+        res.write('false');
+    }
+    else {
+        res.write('true')
+    }
+    res.end();
+}
+
+function processLogIn(req, res) {
+    textBody(req, res, (err, body) => {
+        if (err) {
+            res.writeHead(500);
+            return res.end("FATAL")
+        }
+        let postRequest = querystring.parse(body);
+        processGooglePostRequest(postRequest.credential, res).catch(() => {
+            invalidCredential(res);
+        });
+    })
+}
+
+function serveClientId(req, res) {
+    res.writeHead(200, {"Content-Type" : "json"});
+    res.write(JSON.stringify({client_id : process.env.CLIENT_ID}));
+    res.end();
+}
+
+function processAuthorization(req, res) {
+    const credential = cookie.parse(req.headers.cookie || '').SuperSecureSecretCookie;
+    processCredentialAuthentication(credential, res).catch((error) => {
+        invalidCredential(res);
+    });
+}
 
 async function processGooglePostRequest(credential, res) {
     // Cross-Site Request Forgery protection could go here
@@ -100,6 +153,17 @@ async function processCredentialAuthentication(credential, res) {
     }
 }
 
+
+function invalidCredential(res) {
+    console.error('Invalid credential submitted');
+    res.writeHead(401, {'Content-Type': 'text/plain'});
+    res.end("false");
+}
+
+/***********************/
+/* Auxiliary functions */  
+/***********************/
+
 function addQueryParameters(url, paramsObject) {
     let newUrlStr = url + '?';
 
@@ -109,10 +173,4 @@ function addQueryParameters(url, paramsObject) {
     newUrlStr = newUrlStr.substring(0, newUrlStr.length - 1);
     
     return newUrlStr;
-}
-
-function invalidCredential(res) {
-    console.error('Invalid credential submitted');
-    res.writeHead(401, {'Content-Type': 'text/plain'});
-    res.end("false");
 }

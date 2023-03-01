@@ -1,4 +1,4 @@
-version : '3'
+version : '3.8'
 
 services:
     frontend:
@@ -30,4 +30,6 @@ services:
               target: /server
         ports:
             - 3000:3000
-
+networks:
+    default:
+        name: prodigiosovolcan

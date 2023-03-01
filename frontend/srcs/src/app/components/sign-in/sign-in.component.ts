@@ -17,10 +17,8 @@ export class SignInComponent implements OnInit {
   ngOnInit() {
 
     this.authService.credentialsExist().subscribe( (exist) => {
-      console.log('exist: ', exist);
       if (exist === 'true') {
         this.authService.credentialsAreValid().subscribe((valid) => { 
-          console.log('valid?', valid);
           if (valid === 'true') {
             this.router.navigate(['/home'])
           }
